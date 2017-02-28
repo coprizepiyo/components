@@ -1,13 +1,62 @@
 <!DOCTYPE html>
+
 <head>
     <meta charset="utf-8">
     <meta name="author" content="Teamus">
 
     <title></title>
-    <link href="/style/main.css" rel="stylesheet" type="text/css">
+    <link href="./style/main.css" rel="stylesheet" type="text/css">
 </head>
-<body>
 
-<script type="text/javascript" src="/js/upload.js"></script>
+<body>
+    <div id="holder" class="file"></div>
+    <script type="text/javascript" src="./js/upload.js"></script>
+    <script type="text/javascript">
+        var holder = document.getElementById('holder');
+
+        //因为文件是从外部拖入，所以需要用的此事件，否则触发不了ondrop事件
+        holder.ondragover = function () {
+            this.className = 'hover';
+            return false;
+        };
+        // holder.ondragend = function () {
+        //     this.className = 'file';
+        //     return false;
+        // };
+        holder.ondrop = function (e) {
+            this.className = 'file';
+            e.preventDefault();
+            // readfiles(e.dataTransfer.files);
+            fileItems = e.dataTransfer.files;
+            viewHolder(fileItems);
+        }
+
+        function viewHolder(files) {
+            while (holder.hasChildNodes()) {
+                holder.removeChild(holder.firstChild);
+            }
+            for (var i = 0; i < files.length; i++) {
+                previewfile(files[i]);
+            }
+        }
+
+        function previewfile(file) {
+            // file= file[0];
+            if (1==1) {
+                var reader = new FileReader();
+                reader.onload = function (event) {
+                    var image = new Image();
+                    image.src = event.target.result;
+                    image.width = 250; // a fake resize
+                    holder.appendChild(image);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                holder.innerHTML += '<p>Uploaded ' + file.name + ' ' + (file.size ? (file.size / 1024 | 0) + 'K' : '');
+                console.log(file);
+            }
+        }
+    </script>
 </body>
+
 </html>
