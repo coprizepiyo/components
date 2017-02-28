@@ -10,23 +10,23 @@
 
 <body>
     <div id="holder" class="file"></div>
+    <p id="formData"></p>
+    <button onclick="upload()">点击上传</button>
     <script type="text/javascript" src="./js/upload.js"></script>
     <script type="text/javascript">
-        var holder = document.getElementById('holder');
+        var holder = document.getElementById('holder'),
+            formData = new FormData();
+            fileItems = [];
 
         //因为文件是从外部拖入，所以需要用的此事件，否则触发不了ondrop事件
         holder.ondragover = function () {
             this.className = 'hover';
             return false;
         };
-        // holder.ondragend = function () {
-        //     this.className = 'file';
-        //     return false;
-        // };
+        // e 为拖动的对象
         holder.ondrop = function (e) {
             this.className = 'file';
             e.preventDefault();
-            // readfiles(e.dataTransfer.files);
             fileItems = e.dataTransfer.files;
             viewHolder(fileItems);
         }
@@ -41,19 +41,27 @@
         }
 
         function previewfile(file) {
-            // file= file[0];
-            if (1==1) {
-                var reader = new FileReader();
-                reader.onload = function (event) {
-                    var image = new Image();
-                    image.src = event.target.result;
-                    image.width = 250; // a fake resize
-                    holder.appendChild(image);
-                };
-                reader.readAsDataURL(file);
-            } else {
-                holder.innerHTML += '<p>Uploaded ' + file.name + ' ' + (file.size ? (file.size / 1024 | 0) + 'K' : '');
-                console.log(file);
+            var reader = new FileReader();
+            reader.readAsDataURL(file); //将文件读取为DataURL
+            reader.onload = function (event) {
+                var image = new Image();
+                image.src = event.target.result;
+                image.width = 250; // a fake resize
+                holder.appendChild(image);
+            };
+        }
+
+        function upload() {
+            for (var i = 0; i < fileItems.length; i++) {
+                alert(fileItems[i]);
+                formData.append('file', fileItems[i]);
+            }
+            
+            var xhr=new XMLHttpRequest();
+            xhr.open('post','/upload');
+            xhr.send(formData);
+            xhr.onload=function(){
+
             }
         }
     </script>
